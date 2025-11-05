@@ -1,0 +1,176 @@
+---
+title: "Project Part 1" 
+author: "Artin"
+fontsize: 12pt
+geometry: margin=1in
+urlcolor: black
+output: pdf_document
+header-includes:
+- \usepackage{setspace}
+- \onehalfspacing
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, highlight=FALSE, comment=NA, warnings=FALSE,message=FALSE)
+```
+
+```{r, echo=FALSE, warning=FALSE,results=FALSE}
+bballData<-read.csv("STAT3080Project_data")
+```
+
+\newpage
+
+## Introduction
+
+College basketball is a cornerstone of the broader sports industry, which generates billions of dollars annually through events, media rights, apparel, and sponsorships. The sport’s roots in high schools and universities have made it central to American athletic culture, and its growth through televised tournaments such as March Madness has created major economic and social impacts. As a result, understanding what drives success in Division I basketball provides insight not only into athletic performance but also into financial and institutional decision-making.
+
+Beyond on-court results, college basketball reflects larger questions about fairness and opportunity in college athletics. A recent study found that 86% of collegiate athletes live below the federal poverty line, even as schools and media networks profit from their labor (Bongiovanni, 2020). With new rules allowing players to receive compensation for their name, image, and likeness (NIL), identifying the factors most strongly associated with team success can help universities, athletes, and policymakers better navigate this changing environment.
+
+The following research questions guide my analysis:
+
+*Do Division I college basketball teams with higher home-game attendance percentages win a higher percentage of their games on average?
+
+*Do teams that play at a faster pace and rely more heavily on three-point shots win a higher percentage of their games on average?
+
+*Do teams with higher-rated recruiting classes over the three years prior to the 2022–23 season achieve higher win percentages on average?
+
+Each of the following research questions contributes to understanding success in Division I college basketball through a different lens — fan engagement, strategy, and talent acquisition. Together, they help identify which underlying factors most strongly correlate with team performance and financial or reputational success.
+
+1. Home Attendance Percentage and Team Success
+Examining whether teams with higher home attendance percentages win more games highlights the connection between fan involvement and on-court performance. Attendance not only drives substantial ticket and concession revenue, but also contributes to team morale and home-court advantage, both of which can influence outcomes (Boettger, 2022). Since Division I programs depend heavily on fan turnout to fund athletic departments, understanding this relationship provides insight into both performance dynamics and economic sustainability.
+
+2. Pace of Play and Three-Point Reliance
+This question explores how modern basketball strategies — particularly faster pace and increased reliance on three-point shooting — affect win percentage. The recent shift toward perimeter shooting has changed the skill sets coaches seek and how teams are built. As noted by Schroeder (2019), rule changes and NBA trends have pushed college teams to adapt offensively. Analyzing whether these offensive choices correlate with winning allows coaches and analysts to assess if these “modern” play styles genuinely translate into greater success or if traditional, slower strategies remain competitive.
+
+3. Recruiting Class Rating and Winning Percentage
+Recruiting remains central to success in college basketball. Investigating whether teams with higher-rated recruiting classes perform better provides evidence on the importance of talent acquisition relative to coaching or play style. Teams like Duke and Kentucky, consistently ranking atop recruiting charts, tend to outperform lower-ranked programs (Wittry, 2019). Moreover, with the advent of Name, Image, and Likeness (NIL) compensation, wealthier programs may now attract stronger recruits, potentially widening performance gaps. This makes recruiting strength a key factor in understanding the evolving competitive balance and equity within the NCAA.
+
+## Data Summary
+
+My data represent a sample of Division I men’s college basketball teams drawn from the Power Five conferences — the ACC, SEC, Big Ten, Big 12, and Pac-12 — during the 2022–23 season. I chose this subset of Division I programs because these teams are among the most competitive and well-documented in the country, ensuring that data for all relevant statistics were both available and reliable. The Power Five conferences also receive the majority of national media attention and generate significant revenue, making them an informative sample for examining which factors most strongly correlate with team success.
+
+I collected my data from multiple reputable primary sources. Team box-score statistics such as points, rebounds, assists, and shooting percentages were obtained from ESPN, which maintains comprehensive and regularly updated records for every Division I program. To supplement these traditional statistics, I collected advanced efficiency metrics — including pace, offensive rating, and defensive rating — from respected analytics sites such as KenPom and Warren Nolan. Recruiting class rankings and average ratings for the three years prior to the 2022–23 season were gathered from 247Sports, which compiles composite recruiting data based on major national scouting services. Finally, I obtained home-game attendance and arena capacity data from the NCAA’s official reports, allowing me to calculate home attendance percentages for each team. Each of these organizations is recognized within the sports analytics and collegiate athletics community for maintaining accurate and publicly verifiable data, making them trustworthy and appropriate sources for this analysis.
+
+After compiling the raw data, I merged the datasets by team name and created several new variables relevant to my research questions. I calculated Assist Percentage by dividing total assists by field goals made, and Three-Point Reliance by dividing total points from three-pointers (three times the number of three-pointers made) by total points minus points from free throws. I also calculated Home Attendance Percentage by dividing each team’s average home attendance by its arena capacity. These derived metrics allowed me to quantify specific aspects of team performance and play style — such as ball movement, shooting strategy, and fan engagement — that could not be captured directly from basic box-score data. The dataset contained no missing observations, confirming that focusing on well-covered Power Five programs yielded complete and consistent data.
+
+Because my sample is limited to Power Five teams, the results may not fully generalize to the entire Division I population. Power Five programs tend to have larger budgets, stronger recruiting pipelines, and higher attendance rates than smaller conferences, which could introduce bias into the results. However, this focus also ensures data quality and comparability across teams, which strengthens the reliability of my findings for this subset of college basketball.
+
+Each of the variables collected is directly connected to my three research questions and is appropriate for answering them. Home attendance percentage and win percentage together address whether greater fan engagement and home-court advantage contribute to success. Pace and three-point reliance allow me to explore whether the faster, perimeter-focused style of play that has defined recent seasons actually correlates with higher win percentages. Recruiting class averages capture the strength of talent acquisition and provide insight into whether recruiting success translates into on-court performance. Collectively, these variables and data sources create a comprehensive, high-quality dataset that effectively supports descriptive and inferential analyses of what drives team success in Division I college basketball.
+
+## Data Dictionary
+
+|Variable Name|Abbreviated Name|Description|
+|---|----|-----|
+|Win Percentage|winPercentage|the percentage of games won by team in 2022-23 regular season|
+|Conference (ACC/Big 12/Big Ten/Pac-12/SEC)|conference|the athletic conference the school belonged to for the 2022-23 regular season|
+|School Type (private/public)|schoolType|whether the school is a private or public institution|
+|March Madness 2022-23 (Y/N)|marchMadness|whether the school was a participant in the 2021-22 march madness tournament|
+|New Coach (Y/N)|newCoach|whether the school had a new coach for the 2022-23 basketball season|
+|Average Home Attendance Percentage|homeATTPercentage|average home game attendance divided by stadium capacity|
+|Recruiting Class Average Rating (2020-22)|recruitClassAvg|average recruiting class rating across past three years. Recruits are rated on a scale from 0-100. Teams recruiting points are based on a weighted average of all their incoming recruits using a Gaussian distribution|
+|Field Goal Percentage|FGPercentage|percentage of team's regular season field goal attempts that were successful|
+|Three Pointers Made|TPM|Team's average # of three pointers made per game|
+|Three Pointers Attempted|TPA|Team's average # of three point attempts per game|
+|Three Point Percentage|TPPercentage|Team's three pointers made divided by three pointers attempted|
+|Free Throws Made|FTM|Team's average # of free throws made per game|
+|Free Throw Attempts|FTA|Team's average # of free throw attempts per game|
+|Free Throw Percentage|FTPercentage|Team's free throws made divided by free throws attempted|
+|Opponent Field Goal Percentage|oppFGPercentage|average field goal percentage (average opponent makes per game/average opponents attempts per game) of all of team's opponent's|
+|Opponent Three Point Percentage|oppTPPercentage|average three point percentage of all of team's opponent's|
+|Total Rebound Differential|diffTR|Difference between team's total rebounds per game, and opponent's average total rebounds per game|
+|Turnover Differential|diffTO|Difference between team's total turnovers per game, and opponent's average turnovers per game|
+|Pace|pace|Measure of a team's possessions per 40 minutes of game time|
+|Offensive Rating|offRating|points per 100 possessions|
+|Defensive Rating|defRating|opponent points per 100 possesions|
+|Assist Percentage|ASTPercentage|team's total assists divided by total field goals made|
+|Three Point Reliance|TPReliance|team's total points from three pointers divided by team's total points minus points from free throws|
+
+## Data Exploration
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(scales)
+
+# --- Numerical Summary 1: Descriptive stats for Win Percentage ---
+
+win_stats <- tibble(
+Statistic = c("N", "Mean", "SD", "Median", "IQR", "Min", "Max"),
+Value = c(
+sum(!is.na(bballData$winPercentage)),
+mean(bballData$winPercentage, na.rm = TRUE),
+sd(bballData$winPercentage, na.rm = TRUE),
+median(bballData$winPercentage, na.rm = TRUE),
+IQR(bballData$winPercentage, na.rm = TRUE),
+min(bballData$winPercentage, na.rm = TRUE),
+max(bballData$winPercentage, na.rm = TRUE)
+)
+)
+kable(win_stats, caption = NULL, digits = 3)
+
+# --- Numerical Summary 2: Correlations with Win Percentage (key variables) ---
+
+corr_tbl <- tibble(
+Variable = c("Home Attendance Percentage", "Recruiting Class Average", "Pace", "Three-Point Reliance"),
+Correlation_with_WinPct = c(
+cor(bballData$homeATTPercentage, bballData$winPercentage, use = "complete.obs"),
+cor(bballData$recruitClassAvg,   bballData$winPercentage, use = "complete.obs"),
+cor(bballData$pace,              bballData$winPercentage, use = "complete.obs"),
+cor(bballData$TPReliance,        bballData$winPercentage, use = "complete.obs")
+)
+)
+kable(mutate(corr_tbl, Correlation_with_WinPct = round(Correlation_with_WinPct, 3)), caption = NULL)
+
+# --- Graph 1: Home Attendance % vs Win Percentage ---
+
+ggplot(bballData, aes(x = homeATTPercentage, y = winPercentage)) +
+geom_point(alpha = 0.75) +
+geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
+labs(title = "Home Attendance Percentage vs. Win Percentage",
+x = "Home Attendance Percentage",
+y = "Win Percentage") +
+theme_minimal()
+
+# --- Graph 2: Recruiting Class Average vs Win Percentage ---
+
+ggplot(bballData, aes(x = recruitClassAvg, y = winPercentage)) +
+geom_point(alpha = 0.75) +
+geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
+labs(title = "Recruiting Class Average (2020–2022) vs. Win Percentage",
+x = "Recruiting Class Average (0–100)",
+y = "Win Percentage") +
+theme_minimal()
+```
+
+## Conclusion
+
+To answer my first research question about whether teams with higher home attendance percentages tend to win more games, I examined the scatterplot and correlation between home attendance percentage and win percentage. The relationship appeared moderately positive, with a correlation coefficient around 0.54, suggesting that greater fan turnout and home-court engagement are associated with higher team success. This supports the idea that stronger fan bases can provide both a motivational and financial advantage to college programs.
+
+For my second question, I analyzed whether teams that play faster or rely more heavily on three-point shots tend to win a higher percentage of games. The relationship between pace and win percentage was weakly positive (correlation ≈ 0.08), while three-point reliance showed almost no relationship (correlation ≈ –0.01). These results suggest that while playing faster may slightly align with success, relying on three-pointers alone does not necessarily translate into better outcomes. Team success likely depends on multiple dimensions of offensive and defensive efficiency rather than a single stylistic factor.
+
+My third research question examined whether teams with higher-rated recruiting classes over the previous three years tend to achieve higher win percentages. The correlation of approximately 0.20 indicated a weak positive relationship, implying that recruiting strength contributes somewhat to success but is far from the only determinant. Factors such as coaching, player development, and experience may play equally large roles.
+
+Based on these findings, the relationship between home attendance percentage and win percentage appears to be the most promising topic for further analysis in Part 2. It represents the strongest association among the variables examined and reflects both athletic and economic aspects of team performance. Overall, these results suggest that while multiple factors influence success in Division I college basketball, consistent fan support may be one of the most impactful contributors.
+
+\newpage
+## Data Appendix
+```{r, echo=FALSE}
+head(bballData)
+```
+
+\newpage
+## References
+
+### Background
+1. Bongiovanni, M. A. (2020). Compensation for the players: An analysis of the compensation for an NCAA athlete. https://research.library.fordham.edu/cgi/viewcontent.cgi?article=1005&context=fulr-online-blog
+2. Brown, T. M. (2018, March 14). Influencing factors in college basketball attendance. Athletic Director U. https://athleticdirectoru.com/articles/influencing-factors-mbb-attendance/
+3. Schroeder, G. (2019, April 6). NBA influence and rule changes have sparked record three-point trend in college basketball. USA TODAY. https://www.usatoday.com/story/sports/ncaaf/columnist/george-schroeder/2019/04/06/final-four-college-basketball-embraces-three-pointers-record-pace/3380389002/
+4. Wittry, A. (2019, April 18). Analyzing college basketball’s relationship between recruiting rankings and wins. Stadium. https://watchstadium.com/analyzing-college-basketballs-relationship-between-recruiting-rankings-and-wins-04-17-2019/
+
+### Data
+1. 2022 Recruit Basketball Team Rankings. 247Sports. (n.d.). https://247sports.com/season/2022-basketball/compositeteamrankings/
+2. ESPN Internet Ventures. (n.d.). 2022-23 men’s college basketball team stat leaders. ESPN. https://www.espn.com/mens-college-basketball/stats/team/_/season/2023/group/2/table/offensive/sort/avgPoints/dir/desc
+3. NCAA. (n.d.-a). Men’s basketball attendance records ... http://fs.ncaa.org/Docs/stats/m_basketball_RB/2024/Attend.pdf
+4. Team advanced stats. WarrenNolan.com. (n.d.). https://www.warrennolan.com/basketball/2022/stats-adv-pace
+5. 2022 Pomeroy College Basketball Ratings. (n.d.). https://kenpom.com/index.php?y=2022

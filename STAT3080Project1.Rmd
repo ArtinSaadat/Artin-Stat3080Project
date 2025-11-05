@@ -1,26 +1,30 @@
 ---
-title: "Project Part 1" 
+title: "stat part1"
 author: "Artin"
 fontsize: 12pt
 geometry: margin=1in
 urlcolor: black
-output: pdf_document
+output:
+  pdf_document:
+    latex_engine: xelatex
 header-includes:
-- \usepackage{setspace}
-- \onehalfspacing
+  - \usepackage{setspace}
+  - \onehalfspacing
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, highlight=FALSE, comment=NA, warnings=FALSE,message=FALSE)
 ```
 
 ```{r, echo=FALSE, warning=FALSE,results=FALSE}
-bballData<-read.csv("STAT3080Project_data")
+bballData<-read.csv("STAT3080Project_data.csv")
+library(ggplot2)
 ```
 
-\newpage
-
 ## Introduction
+
+URL to git repo: https://github.com/ArtinSaadat/Artin-Stat3080Project.git
 
 College basketball is a cornerstone of the broader sports industry, which generates billions of dollars annually through events, media rights, apparel, and sponsorships. The sport’s roots in high schools and universities have made it central to American athletic culture, and its growth through televised tournaments such as March Madness has created major economic and social impacts. As a result, understanding what drives success in Division I basketball provides insight not only into athletic performance but also into financial and institutional decision-making.
 
@@ -38,23 +42,17 @@ Each of the following research questions contributes to understanding success in
 
 1. Home Attendance Percentage and Team Success
 Examining whether teams with higher home attendance percentages win more games highlights the connection between fan involvement and on-court performance. Attendance not only drives substantial ticket and concession revenue, but also contributes to team morale and home-court advantage, both of which can influence outcomes (Boettger, 2022). Since Division I programs depend heavily on fan turnout to fund athletic departments, understanding this relationship provides insight into both performance dynamics and economic sustainability.
-
 2. Pace of Play and Three-Point Reliance
 This question explores how modern basketball strategies — particularly faster pace and increased reliance on three-point shooting — affect win percentage. The recent shift toward perimeter shooting has changed the skill sets coaches seek and how teams are built. As noted by Schroeder (2019), rule changes and NBA trends have pushed college teams to adapt offensively. Analyzing whether these offensive choices correlate with winning allows coaches and analysts to assess if these “modern” play styles genuinely translate into greater success or if traditional, slower strategies remain competitive.
-
 3. Recruiting Class Rating and Winning Percentage
 Recruiting remains central to success in college basketball. Investigating whether teams with higher-rated recruiting classes perform better provides evidence on the importance of talent acquisition relative to coaching or play style. Teams like Duke and Kentucky, consistently ranking atop recruiting charts, tend to outperform lower-ranked programs (Wittry, 2019). Moreover, with the advent of Name, Image, and Likeness (NIL) compensation, wealthier programs may now attract stronger recruits, potentially widening performance gaps. This makes recruiting strength a key factor in understanding the evolving competitive balance and equity within the NCAA.
 
 ## Data Summary
 
 My data represent a sample of Division I men’s college basketball teams drawn from the Power Five conferences — the ACC, SEC, Big Ten, Big 12, and Pac-12 — during the 2022–23 season. I chose this subset of Division I programs because these teams are among the most competitive and well-documented in the country, ensuring that data for all relevant statistics were both available and reliable. The Power Five conferences also receive the majority of national media attention and generate significant revenue, making them an informative sample for examining which factors most strongly correlate with team success.
-
 I collected my data from multiple reputable primary sources. Team box-score statistics such as points, rebounds, assists, and shooting percentages were obtained from ESPN, which maintains comprehensive and regularly updated records for every Division I program. To supplement these traditional statistics, I collected advanced efficiency metrics — including pace, offensive rating, and defensive rating — from respected analytics sites such as KenPom and Warren Nolan. Recruiting class rankings and average ratings for the three years prior to the 2022–23 season were gathered from 247Sports, which compiles composite recruiting data based on major national scouting services. Finally, I obtained home-game attendance and arena capacity data from the NCAA’s official reports, allowing me to calculate home attendance percentages for each team. Each of these organizations is recognized within the sports analytics and collegiate athletics community for maintaining accurate and publicly verifiable data, making them trustworthy and appropriate sources for this analysis.
-
 After compiling the raw data, I merged the datasets by team name and created several new variables relevant to my research questions. I calculated Assist Percentage by dividing total assists by field goals made, and Three-Point Reliance by dividing total points from three-pointers (three times the number of three-pointers made) by total points minus points from free throws. I also calculated Home Attendance Percentage by dividing each team’s average home attendance by its arena capacity. These derived metrics allowed me to quantify specific aspects of team performance and play style — such as ball movement, shooting strategy, and fan engagement — that could not be captured directly from basic box-score data. The dataset contained no missing observations, confirming that focusing on well-covered Power Five programs yielded complete and consistent data.
-
 Because my sample is limited to Power Five teams, the results may not fully generalize to the entire Division I population. Power Five programs tend to have larger budgets, stronger recruiting pipelines, and higher attendance rates than smaller conferences, which could introduce bias into the results. However, this focus also ensures data quality and comparability across teams, which strengthens the reliability of my findings for this subset of college basketball.
-
 Each of the variables collected is directly connected to my three research questions and is appropriate for answering them. Home attendance percentage and win percentage together address whether greater fan engagement and home-court advantage contribute to success. Pace and three-point reliance allow me to explore whether the faster, perimeter-focused style of play that has defined recent seasons actually correlates with higher win percentages. Recruiting class averages capture the strength of talent acquisition and provide insight into whether recruiting success translates into on-court performance. Collectively, these variables and data sources create a comprehensive, high-quality dataset that effectively supports descriptive and inferential analyses of what drives team success in Division I college basketball.
 
 ## Data Dictionary
@@ -87,61 +85,40 @@ Each of the variables collected is directly connected to my three research quest
 
 ## Data Exploration
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-library(ggplot2)
-library(dplyr)
-library(knitr)
-library(scales)
+```{r out.width = "50%", out.height = "33%", fig.show = "hold"}
+ggplot(bballData, aes(x = winPercentage)) +
+  geom_histogram(binwidth = 0.05, fill = "steelblue", color = "white") +
+  labs(title = "Histogram of Win Percentage", x = "Win Percentage")
 
-# --- Numerical Summary 1: Descriptive stats for Win Percentage ---
+# Scatterplots
+ggplot(bballData, aes(x = winPercentage, y = homeATTPercentage)) +
+  geom_point() +
+  labs(title = "Win Percentage vs. Home Attendance Percentage")
 
-win_stats <- tibble(
-Statistic = c("N", "Mean", "SD", "Median", "IQR", "Min", "Max"),
-Value = c(
-sum(!is.na(bballData$winPercentage)),
-mean(bballData$winPercentage, na.rm = TRUE),
-sd(bballData$winPercentage, na.rm = TRUE),
-median(bballData$winPercentage, na.rm = TRUE),
-IQR(bballData$winPercentage, na.rm = TRUE),
-min(bballData$winPercentage, na.rm = TRUE),
-max(bballData$winPercentage, na.rm = TRUE)
-)
-)
-kable(win_stats, caption = NULL, digits = 3)
+ggplot(bballData, aes(x = winPercentage, y = pace)) +
+  geom_point() +
+  labs(title = "Win Percentage vs. Pace")
 
-# --- Numerical Summary 2: Correlations with Win Percentage (key variables) ---
 
-corr_tbl <- tibble(
-Variable = c("Home Attendance Percentage", "Recruiting Class Average", "Pace", "Three-Point Reliance"),
-Correlation_with_WinPct = c(
-cor(bballData$homeATTPercentage, bballData$winPercentage, use = "complete.obs"),
-cor(bballData$recruitClassAvg,   bballData$winPercentage, use = "complete.obs"),
-cor(bballData$pace,              bballData$winPercentage, use = "complete.obs"),
-cor(bballData$TPReliance,        bballData$winPercentage, use = "complete.obs")
-)
-)
-kable(mutate(corr_tbl, Correlation_with_WinPct = round(Correlation_with_WinPct, 3)), caption = NULL)
-
-# --- Graph 1: Home Attendance % vs Win Percentage ---
-
-ggplot(bballData, aes(x = homeATTPercentage, y = winPercentage)) +
-geom_point(alpha = 0.75) +
-geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
-labs(title = "Home Attendance Percentage vs. Win Percentage",
-x = "Home Attendance Percentage",
-y = "Win Percentage") +
-theme_minimal()
-
-# --- Graph 2: Recruiting Class Average vs Win Percentage ---
-
-ggplot(bballData, aes(x = recruitClassAvg, y = winPercentage)) +
-geom_point(alpha = 0.75) +
-geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
-labs(title = "Recruiting Class Average (2020–2022) vs. Win Percentage",
-x = "Recruiting Class Average (0–100)",
-y = "Win Percentage") +
-theme_minimal()
+# Boxplot
+ggplot(bballData, aes(x = as.factor(newCoach), y = winPercentage)) +
+  geom_boxplot() +
+  labs(title = "Impact of New Coach on Win Percentage",
+       x = "New Coach", y = "Win Percentage")
 ```
+
+
+```{r, echo=FALSE, warning=FALSE,results=FALSE}
+## Use this chunk to compute any summary statistics that you want to use
+## in your conclusions. 
+## These will not print in your report
+round(cor(bballData[7:24], bballData$winPercentage),3)
+tapply(bballData$winPercentage, bballData$conference, summary)
+tapply(bballData$winPercentage, bballData$schoolType, summary)
+tapply(bballData$winPercentage, bballData$marchMadness22, summary)
+tapply(bballData$winPercentage, bballData$newCoach, summary)
+```
+
 
 ## Conclusion
 
